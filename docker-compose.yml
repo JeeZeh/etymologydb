@@ -1,0 +1,22 @@
+version: '3'
+services:
+  neo4j:
+    image: neo4j:4.2.18-community
+    restart: unless-stopped
+    ports:
+      - 7575:7575
+      - 7687:7687
+    volumes:
+      - ./conf:/conf
+      - ./data:/data
+      - ./import:/import
+      - ./logs:/logs
+      - ./plugins:/plugins
+    environment:
+      # Raise memory limits
+      - NEO4J_dbms_memory_pagecache_size=1G
+      - NEO4J_dbms.memory.heap.initial_size=1G
+      - NEO4J_dbms_memory_heap_max__size=1G
+      - NEO4J_dbms_connector_https_advertised__address=127.0.0.1:7574
+      - NEO4J_dbms_connector_http_advertised__address=127.0.0.1:7575
+      - NEO4J_dbms_connector_bolt_advertised__address=127.0.0.1:7687
