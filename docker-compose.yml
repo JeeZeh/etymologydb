@@ -14,9 +14,9 @@ services:
       - ./plugins:/plugins
     environment:
       # Raise memory limits
-      - NEO4J_dbms_memory_pagecache_size=4G
-      - NEO4J_dbms.memory.heap.initial_size=4G
-      - NEO4J_dbms_memory_heap_max__size=8G
+      - NEO4J_dbms_memory_pagecache_size=1G
+      - NEO4J_dbms.memory.heap.initial_size=2G
+      - NEO4J_dbms_memory_heap_max__size=4G
       - NEO4J_dbms_connector_https_advertised__address=:7574
       - NEO4J_dbms_connector_http_advertised__address=:7575
       - NEO4J_dbms_connector_http_listen__address=:7575
