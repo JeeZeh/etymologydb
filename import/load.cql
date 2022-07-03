@@ -26,10 +26,3 @@ MATCH (a:Word {id: line[0]})
 MATCH (b:Word {id: line[2]})
 CALL apoc.create.relationship(a, line[1], {}, b) YIELD rel
 RETURN COUNT(rel) AS `Inserted relationships:`;
-
-
-// cat /import/load.cql | cypher-shell -u neo4j -p hello
-// Import words.csv
-// Import relationships.csv
-// Add indexes
-// Restart docker
