@@ -16,18 +16,10 @@ relationships_file = Path("import") / Path("relationships.csv")
 
 
 def strip_word(w: str):
-    return (
-        w.strip()
-        .replace("''", "")
-        .replace("[[", "")
-        .replace("]]", "")
-        .replace('"', "")
-        .replace("|", "")
-    )
+    return w.strip().replace("''", "").replace("[[", "").replace("]]", "").replace('"', "").replace("|", "")
 
 
 def transform():
-    # Reverse etymological_origin_of
     redundant_pairs = {
         "has_derived_form": "is_derived_from",
         "etymology": "etymological_origin_of",
@@ -53,14 +45,18 @@ def transform():
     for w in tqdm(words, unit="words"):
         target_words.write(f"{w}{delim}{w.replace(': ', delim, 1)}{delim}Word\n")
 
-    print(f"Filtering bi-directional relationships")
+    print(f"Filtering and processing relationships")
     rels_filtered = set()
     for r in tqdm(rels, unit="rels"):
         # Don't create edges in both directions
         if r[1] in redundant_pairs and (r[2], redundant_pairs[r[1]], r[0]) in rels:
             continue
 
-        rels_filtered.add(r)
+        # Reverse etymological_origin_of direction
+        if r[1] == "etymological_origin_of":
+            rels_filtered.add((r[2], r[1], r[0]))
+        else:
+            rels_filtered.add(r)
 
     print(f"Writing {relationships_file}")
     for w1, r, w2 in tqdm(rels_filtered, unit="rels"):
