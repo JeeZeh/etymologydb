@@ -52,11 +52,7 @@ def transform():
         if r[1] in redundant_pairs and (r[2], redundant_pairs[r[1]], r[0]) in rels:
             continue
 
-        # Reverse etymological_origin_of direction
-        if r[1] == "etymological_origin_of":
-            rels_filtered.add((r[2], r[1], r[0]))
-        else:
-            rels_filtered.add(r)
+        rels_filtered.add(r)
 
     print(f"Writing {relationships_file}")
     for w1, r, w2 in tqdm(rels_filtered, unit="rels"):
