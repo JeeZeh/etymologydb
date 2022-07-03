@@ -18,7 +18,7 @@ relationships_file = Path("import") / Path("relationships.csv")
 def strip_word(w: str):
     return (
         w.strip()
-        .replace(r"(''|\[\[|\]\]|\"|\|)", "")
+        .replace("''", "")
         .replace("[[", "")
         .replace("]]", "")
         .replace('"', "")
@@ -27,10 +27,16 @@ def strip_word(w: str):
 
 
 def transform():
-    ignore_edges = set(("has_derived_form", "etymology"))
+    # Reverse etymological_origin_of
+    redundant_pairs = {
+        "has_derived_form": "is_derived_from",
+        "etymology": "etymological_origin_of",
+        "etymologically_related": "etymologically_related",
+    }
     words: set[str] = set()
+    rels: set[tuple[str, str, str]] = set()
 
-    print(f"Reading etymwn.csv and writing {words_file}")
+    print(f"Reading etymwn.csv")
     source = etymwn_file.open("r", encoding="utf8")
     target_relationships = relationships_file.open("w+", encoding="utf8")
 
@@ -39,14 +45,27 @@ def transform():
         w1, w2 = strip_word(line[0]), strip_word(line[2])
         words.add(w1)
         words.add(w2)
-        if line[1][4:] not in ignore_edges:
-            target_relationships.write(f"{w1}{delim}{line[1][4:]}{delim}{w2}\n")
+        rels.add((w1, line[1][4:], w2))
 
     print(f"Writing {words_file}")
     target_words = words_file.open("w+", encoding="utf8")
     # target_words.write(words_header + "\n")
     for w in tqdm(words, unit="words"):
         target_words.write(f"{w}{delim}{w.replace(': ', delim, 1)}{delim}Word\n")
+
+    print(f"Filtering bi-directional relationships")
+    rels_filtered = set()
+    for r in tqdm(rels, unit="rels"):
+        # Don't create edges in both directions
+        if r[1] in redundant_pairs and (r[2], redundant_pairs[r[1]], r[0]) in rels:
+            continue
+
+        rels_filtered.add(r)
+
+    print(f"Writing {relationships_file}")
+    for w1, r, w2 in tqdm(rels_filtered, unit="rels"):
+        target_relationships.write(f"{w1}{delim}{r}{delim}{w2}\n")
+
 
 def download_etymwn():
     etymwn_url = "http://etym.org/etymwn-20130208.zip"
@@ -61,22 +80,8 @@ def download_etymwn():
     zip_file = ZipFile(zip_as_bytes_io)
     zip_file.extractall(etymwn_file.parent)
 
-def download_apoc():
-    apoc_url = "https://github.com/neo4j-contrib/neo4j-apoc-procedures/releases/download/4.2.0.10/apoc-4.2.0.10-all.jar"
-    print(f"Downloading {apoc_url} and extracting to {apoc_file}")
-
-    # Download Etymwn
-    r = requests.get(
-        apoc_url,
-        stream=True,
-    )
-    apoc_out = apoc_file.open("wb+")
-    for chunk in r:
-        apoc_out.write(chunk)
-
 
 if __name__ == "__main__":
-    download_apoc()
     download_etymwn()
     transform()
 

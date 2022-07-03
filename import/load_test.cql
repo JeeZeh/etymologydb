@@ -11,11 +11,10 @@ FOR (w:Word) ON (w.id);
 
 // Preload vertices
 USING PERIODIC COMMIT 100000
-LOAD CSV FROM 'file:///words.csv' AS line 
+LOAD CSV FROM 'file:///words.csv' AS line
 FIELDTERMINATOR '|'
 
-CREATE (w:Word {id: line[0], lang: line[1], text: line[2]})
-RETURN COUNT(w) AS `Inserted words:`;
+CREATE (:Word {id: line[0], lang: line[1], text: line[2]});
 
 // Load relationships
 USING PERIODIC COMMIT 100000
@@ -25,7 +24,7 @@ FIELDTERMINATOR '|'
 MATCH (a:Word {id: line[0]})
 MATCH (b:Word {id: line[2]})
 CALL apoc.create.relationship(a, line[1], {}, b) YIELD rel
-RETURN COUNT(rel) AS `Inserted relationships:`;
+return count(rel);
 
 
 // cat /import/load.cql | cypher-shell -u neo4j -p hello
