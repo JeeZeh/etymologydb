@@ -39,6 +39,7 @@ def transform():
         words.add(w2)
         rels.add((w1, line[1][4:], w2))
 
+    # TODO: Add is_suffix/is_prefix property
     print(f"Writing {words_file}")
     target_words = words_file.open("w+", encoding="utf8")
     # target_words.write(words_header + "\n")
