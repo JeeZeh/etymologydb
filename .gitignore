@@ -2,5 +2,9 @@
 *.tsv
 data
 logs
-import/readme.txt
 plugins
+memgraph/etc
+memgraph/lib
+memgraph/log
+import
+etymology.csv.gz
