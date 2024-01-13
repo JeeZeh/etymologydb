@@ -8,3 +8,4 @@ memgraph/lib
 memgraph/log
 import
 etymology.csv.gz
+import/README.md

@@ -17,9 +17,7 @@ A graph database connecting words (vertices) by their etymological relationships
 
 ## Next Steps
 
-- Find a newer dataset
-- Find a more complete dataset
+- Include full bootstrapping script, including data load queries directly against graph
 - Decorate words and edges with descriptions of relation if/where possible
 - Improve and include basic Memgraph graph style
 - Possibly a dedicated web UI for this project?
-- Include full bootstrapping script, including data load queries
